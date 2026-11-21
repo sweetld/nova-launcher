@@ -52,6 +52,8 @@ import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherSettings;
 import com.android.launcher3.R;
 import com.android.launcher3.apppairs.AppPairIcon;
+import app.lawnchair.folder.FolderSwipeHelper;
+
 import com.android.launcher3.folder.Folder;
 import com.android.launcher3.folder.FolderIcon;
 import com.android.launcher3.logging.InstanceId;
@@ -138,6 +140,14 @@ public class ItemClickHandler {
      * @param v The view that was clicked. Must be an instance of {@link FolderIcon}.
      */
     private static void onClickFolderIcon(View v) {
+        // Lawnchair fork: in swipe-to-open mode a tap launches the folder's first app.
+        if (FolderSwipeHelper.isEnabled()) {
+            WorkspaceItemInfo first = FolderSwipeHelper.firstApp(((FolderIcon) v).mInfo);
+            if (first != null) {
+                onClickAppShortcut(v, first, Launcher.getLauncher(v.getContext()));
+                return;
+            }
+        }
         Folder folder = ((FolderIcon) v).getFolder();
         if (!folder.isOpen() && !folder.isDestroyed()) {
             // Open the requested folder

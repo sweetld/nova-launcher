@@ -60,6 +60,11 @@ fun FolderPreferences(
                     IconShapePreview(iconShape = folderIconShapeAdapter.state.value)
                 },
             )
+            SwitchPreference(
+                adapter = prefs2.folderSwipeToOpen.getAdapter(),
+                label = stringResource(id = R.string.folder_swipe_to_open_label),
+                description = stringResource(id = R.string.folder_swipe_to_open_description),
+            )
             ColorPreference(preference = prefs2.folderColor)
             SliderPreference(
                 label = stringResource(id = R.string.folder_preview_bg_opacity_label),

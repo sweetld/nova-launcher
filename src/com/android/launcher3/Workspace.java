@@ -154,6 +154,7 @@ import app.lawnchair.LawnchairApp;
 import app.lawnchair.LawnchairAppKt;
 import app.lawnchair.preferences.PreferenceManager;
 import app.lawnchair.animation.WorkspaceScrollEffect;
+import app.lawnchair.folder.FolderSwipeHelper;
 import app.lawnchair.preferences2.PreferenceManager2;
 import app.lawnchair.smartspace.DoubleShadowTextView;
 import app.lawnchair.smartspace.SmartspaceAppWidgetProvider;
@@ -1252,6 +1253,10 @@ public class Workspace<T extends View & PageIndicator> extends PagedView<T>
 
     // Lawnchair: Icon swipe gesture feature
     public boolean isTouchOnIconWithSwipeGesture(float x, float y, boolean vertical) {
+        // Lawnchair fork: a vertical swipe on a folder opens the folder, not the app drawer.
+        if (vertical && FolderSwipeHelper.isEnabled() && findFolderIconAtPosition(x, y) != null) {
+            return true;
+        }
         boolean hasConfiguredIconSwipeGesture = false;
         BubbleTextView touchedIcon = findIconAtPosition(x, y);
         if (touchedIcon != null) {
@@ -1262,6 +1267,28 @@ public class Workspace<T extends View & PageIndicator> extends PagedView<T>
             }
         }
         return hasConfiguredIconSwipeGesture;
+    }
+
+    // Lawnchair fork: folder hit-test for "swipe up to open folders".
+    private FolderIcon findFolderIconAtPosition(float x, float y) {
+        for (int i = getChildCount() - 1; i >= 0; i--) {
+            View child = getChildAt(i);
+            if (!(child instanceof CellLayout cellLayout)) continue;
+            float localX = x - child.getLeft();
+            float localY = y - child.getTop();
+            if (!Utilities.pointInView(cellLayout, localX, localY, 0)) continue;
+            ShortcutAndWidgetContainer container = cellLayout.getShortcutsAndWidgets();
+            float cx = localX - container.getLeft();
+            float cy = localY - container.getTop();
+            for (int j = container.getChildCount() - 1; j >= 0; j--) {
+                View v = container.getChildAt(j);
+                if (v instanceof FolderIcon folderIcon && v.getVisibility() == VISIBLE
+                        && Utilities.pointInView(v, cx - v.getLeft(), cy - v.getTop(), 0)) {
+                    return folderIcon;
+                }
+            }
+        }
+        return null;
     }
 
     // Lawnchair: Icon swipe gesture feature

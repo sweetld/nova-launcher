@@ -51,6 +51,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.android.app.animation.Interpolators;
+import app.lawnchair.folder.FolderSwipeHelper;
 import com.android.launcher3.Alarm;
 import com.android.launcher3.BubbleTextView;
 import com.android.launcher3.CellLayout;
@@ -708,6 +709,27 @@ public class FolderIcon extends FrameLayout implements FloatingIconViewCompanion
             return false;
         }
 
+        // Lawnchair fork: swipe up on a folder opens it when "swipe up to open folders" is on.
+        if (FolderSwipeHelper.isEnabled()) {
+            if (mSwipeTracker == null) mSwipeTracker = new FolderSwipeHelper.Tracker(this);
+            if (mSwipeTracker.onTouchEvent(event)) {
+                MotionEvent cancel = MotionEvent.obtain(event);
+                cancel.setAction(MotionEvent.ACTION_CANCEL);
+                super.onTouchEvent(cancel);
+                mLongPressHelper.onTouchEvent(cancel);
+                cancel.recycle();
+                setPressed(false);
+                if (!mFolder.isOpen() && !mFolder.isDestroyed()) {
+                    mFolder.animateOpen();
+                }
+                return true;
+            }
+            if (mSwipeTracker.getHasFired()) {
+                // Swallow the rest of this touch so no click or long press follows the swipe.
+                return true;
+            }
+        }
+
         // Call the superclass onTouchEvent first, because sometimes it changes the state to
         // isPressed() on an ACTION_UP
         super.onTouchEvent(event);
@@ -715,6 +737,8 @@ public class FolderIcon extends FrameLayout implements FloatingIconViewCompanion
         // Keep receiving the rest of the events
         return true;
     }
+
+    private FolderSwipeHelper.Tracker mSwipeTracker;
 
     /**
      * Returns true if the touch down at the provided position be ignored

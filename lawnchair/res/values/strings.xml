@@ -1113,4 +1113,6 @@
     <string name="scroll_effect_fade">Fade</string>
     <string name="gesture_pinch_in">Pinch in</string>
     <string name="gesture_pinch_out">Pinch out</string>
+    <string name="folder_swipe_to_open_label">Swipe up to open folders</string>
+    <string name="folder_swipe_to_open_description">Tapping a folder opens its first app. Swipe up on it to see the rest.</string>
 </resources>

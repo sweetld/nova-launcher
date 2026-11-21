@@ -468,6 +468,12 @@ class PreferenceManager2 @Inject constructor(
         onSet = { reloadHelper.recreate() },
     )
 
+    /** Folder "cover" mode: tap opens the folder's first app, swipe up opens the folder. */
+    val folderSwipeToOpen = preference(
+        key = booleanPreferencesKey(name = "folder_swipe_to_open"),
+        defaultValue = false,
+    )
+
     val workspaceScrollEffect = preference(
         key = stringPreferencesKey(name = "workspace_scroll_effect"),
         defaultValue = WorkspaceScrollEffect.NONE,
