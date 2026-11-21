@@ -44,6 +44,8 @@ class GestureController(private val launcher: LawnchairLauncher) {
     private val swipeDownHandler = handler(prefs.swipeDownGestureHandler)
     private val twoFingerSwipeUpHandler = handler(prefs.twoFingerSwipeUpGestureHandler)
     private val twoFingerSwipeDownHandler = handler(prefs.twoFingerSwipeDownGestureHandler)
+    private val pinchInHandler = handler(prefs.pinchInGestureHandler)
+    private val pinchOutHandler = handler(prefs.pinchOutGestureHandler)
     private val homePressHandler = handler(prefs.homePressGestureHandler)
     private val backPressHandler = handler(prefs.backPressGestureHandler)
     private val mMSDLPlayerWrapper = MSDLPlayerWrapper.INSTANCE.get(launcher)
@@ -66,6 +68,14 @@ class GestureController(private val launcher: LawnchairLauncher) {
 
     fun onTwoFingerSwipeDown() {
         triggerHandler(twoFingerSwipeDownHandler)
+    }
+
+    fun onPinchIn() {
+        triggerHandler(pinchInHandler)
+    }
+
+    fun onPinchOut() {
+        triggerHandler(pinchOutHandler)
     }
 
     fun onHomePressed() {

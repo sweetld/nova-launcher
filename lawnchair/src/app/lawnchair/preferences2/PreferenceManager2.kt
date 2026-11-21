@@ -30,6 +30,8 @@ import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import app.lawnchair.data.Converters
 import app.lawnchair.font.FontCache
+import app.lawnchair.allapps.DrawerSortMode
+import app.lawnchair.animation.WorkspaceScrollEffect
 import app.lawnchair.gestures.config.GestureHandlerConfig
 import app.lawnchair.gestures.handlers.SleepMode
 import app.lawnchair.gestures.type.GestureType
@@ -466,6 +468,21 @@ class PreferenceManager2 @Inject constructor(
         onSet = { reloadHelper.recreate() },
     )
 
+    val workspaceScrollEffect = preference(
+        key = stringPreferencesKey(name = "workspace_scroll_effect"),
+        defaultValue = WorkspaceScrollEffect.NONE,
+        parse = { WorkspaceScrollEffect.fromString(it) },
+        save = { it.name },
+    )
+
+    val drawerSortMode = preference(
+        key = stringPreferencesKey(name = "drawer_sort_mode"),
+        defaultValue = DrawerSortMode.ALPHABETICAL,
+        parse = { DrawerSortMode.fromString(it) },
+        save = { it.name },
+        onSet = { reloadHelper.recreate() },
+    )
+
     val showSuggestedAppsInDrawer = preference(
         key = booleanPreferencesKey(name = "show_suggested_apps_at_drawer_top"),
         defaultValue = context.resources.getBoolean(R.bool.config_default_show_suggested_apps_at_drawer_top),
@@ -862,6 +879,16 @@ class PreferenceManager2 @Inject constructor(
     val twoFingerSwipeDownGestureHandler = serializablePreference<GestureHandlerConfig>(
         key = stringPreferencesKey("two_finger_swipe_down_gesture_handler"),
         defaultValue = GestureHandlerConfig.OpenQuickSettings,
+    )
+
+    val pinchInGestureHandler = serializablePreference<GestureHandlerConfig>(
+        key = stringPreferencesKey("pinch_in_gesture_handler"),
+        defaultValue = GestureHandlerConfig.NoOp,
+    )
+
+    val pinchOutGestureHandler = serializablePreference<GestureHandlerConfig>(
+        key = stringPreferencesKey("pinch_out_gesture_handler"),
+        defaultValue = GestureHandlerConfig.NoOp,
     )
 
     val homePressGestureHandler = serializablePreference<GestureHandlerConfig>(

@@ -36,6 +36,7 @@ import app.lawnchair.compat.LawnchairQuickstepCompat
 import app.lawnchair.data.AppDatabase
 import app.lawnchair.data.wallpaper.service.WallpaperService
 import app.lawnchair.gestures.GestureController
+import app.lawnchair.gestures.PinchTouchController
 import app.lawnchair.gestures.VerticalSwipeTouchController
 import app.lawnchair.gestures.config.GestureHandlerConfig
 import app.lawnchair.gestures.ui.LawnchairShortcutActivity
@@ -310,7 +311,10 @@ class LawnchairLauncher : QuickstepLauncher() {
 
     override fun createTouchControllers(): Array<TouchController> {
         val verticalSwipeController = VerticalSwipeTouchController(this, gestureController)
-        return arrayOf<TouchController>(verticalSwipeController) + super.createTouchControllers()
+        // Pinch goes first so a two-finger pinch isn't taken as a two-finger swipe.
+        val pinchController = PinchTouchController(this, gestureController)
+        return arrayOf<TouchController>(pinchController, verticalSwipeController) +
+            super.createTouchControllers()
     }
 
     override fun handleHomeTap() {

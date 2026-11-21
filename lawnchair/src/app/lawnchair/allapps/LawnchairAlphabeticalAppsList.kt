@@ -16,6 +16,7 @@ import app.lawnchair.util.observeOnce
 import com.android.launcher3.InvariantDeviceProfile.OnIDPChangeListener
 import com.android.launcher3.allapps.AllAppsStore
 import com.android.launcher3.allapps.AlphabeticalAppsList
+import com.android.launcher3.allapps.AlphabeticalAppsList.FastScrollSectionInfo
 import com.android.launcher3.allapps.BaseAllAppsAdapter.AdapterItem
 import com.android.launcher3.allapps.PrivateProfileManager
 import com.android.launcher3.allapps.WorkProfileManager
@@ -39,6 +40,8 @@ class LawnchairAlphabeticalAppsList<T>(
     where T : Context, T : ActivityContext {
 
     private var hiddenApps: Set<String> = setOf()
+    private var sortMode = DrawerSortMode.ALPHABETICAL
+    private val appSorter = DrawerAppSorter(context)
     private val prefs2 = PreferenceManager2.getInstance(context)
     private val prefs = PreferenceManager.getInstance(context)
 
@@ -58,6 +61,15 @@ class LawnchairAlphabeticalAppsList<T>(
             }
         } catch (t: Throwable) {
             Log.w(TAG, "Failed to initialize hidden apps", t)
+        }
+        try {
+            prefs2.drawerSortMode.onEach(launchIn = context.launcher.lifecycleScope) {
+                sortMode = it
+                appSorter.invalidate()
+                onAppsUpdated()
+            }
+        } catch (t: Throwable) {
+            Log.w(TAG, "Failed to initialize drawer sort mode", t)
         }
         observeFolders()
     }
@@ -132,9 +144,26 @@ class LawnchairAlphabeticalAppsList<T>(
                 }
             }
             val remainingApps = appList.filterNot { app -> filteredList.contains(app) && prefs.folderApps.get() }
-            position = super.addAppsWithSections(remainingApps, position)
+            position = addSorted(remainingApps.filterNotNull(), position)
         }
 
+        return position
+    }
+
+    /**
+     * A–Z keeps the stock letter sections. Other orders get one section, because letter
+     * headers would repeat and the fast scroller would jump around.
+     */
+    private fun addSorted(apps: List<AppInfo>, startPosition: Int): Int {
+        if (sortMode == DrawerSortMode.ALPHABETICAL || apps.isEmpty()) {
+            return super.addAppsWithSections(apps, startPosition)
+        }
+        var position = startPosition
+        mFastScrollerSections.add(FastScrollSectionInfo(SORTED_SECTION, position))
+        appSorter.sort(apps, sortMode).forEach {
+            mAdapterItems.add(AdapterItem.asApp(it))
+            position++
+        }
         return position
     }
 
@@ -142,3 +171,6 @@ class LawnchairAlphabeticalAppsList<T>(
         onAppsUpdated()
     }
 }
+
+/** Fast-scroller label used when the drawer is not sorted A–Z. */
+private const val SORTED_SECTION = "•"

@@ -1098,4 +1098,19 @@
     <string name="lawnchair_action_failed">Failed to trigger action</string>
 
     <string name="please_wait">Please wait…</string>
+
+    <!-- Personal fork additions -->
+    <string name="drawer_sort_label">Sort apps</string>
+    <string name="drawer_sort_alphabetical">A–Z</string>
+    <string name="drawer_sort_most_used">Most used (needs usage access)</string>
+    <string name="drawer_sort_newest">Newest installed first</string>
+    <string name="scroll_effect_label">Page scroll effect</string>
+    <string name="scroll_effect_none">None</string>
+    <string name="scroll_effect_cube">Cube</string>
+    <string name="scroll_effect_card_stack">Card stack</string>
+    <string name="scroll_effect_zoom">Zoom</string>
+    <string name="scroll_effect_rotate">Rotate</string>
+    <string name="scroll_effect_fade">Fade</string>
+    <string name="gesture_pinch_in">Pinch in</string>
+    <string name="gesture_pinch_out">Pinch out</string>
 </resources>

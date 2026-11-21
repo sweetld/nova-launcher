@@ -153,6 +153,7 @@ import static app.lawnchair.util.LawnchairUtilsKt.toBitmap;
 import app.lawnchair.LawnchairApp;
 import app.lawnchair.LawnchairAppKt;
 import app.lawnchair.preferences.PreferenceManager;
+import app.lawnchair.animation.WorkspaceScrollEffect;
 import app.lawnchair.preferences2.PreferenceManager2;
 import app.lawnchair.smartspace.DoubleShadowTextView;
 import app.lawnchair.smartspace.SmartspaceAppWidgetProvider;
@@ -262,6 +263,7 @@ public class Workspace<T extends View & PageIndicator> extends PagedView<T>
     public boolean mHasOnLayoutBeenCalled = false;
 
     private boolean mWorkspaceFadeInAdjacentScreens;
+    private WorkspaceScrollEffect mLastScrollEffect = WorkspaceScrollEffect.NONE;
 
     final WallpaperOffsetInterpolator mWallpaperOffset;
     private boolean mUnlockWallpaperFromDefaultPageOnLayout;
@@ -1523,7 +1525,33 @@ public class Workspace<T extends View & PageIndicator> extends PagedView<T>
 
         updatePageAlphaValues();
         updatePageScrollValues();
+        updatePageScrollEffects();
         enableHwLayersOnVisiblePages();
+    }
+
+    /** Lawnchair fork: home screen page transition effects (cube, card stack, ...). */
+    private void updatePageScrollEffects() {
+        WorkspaceScrollEffect effect = PreferenceCacheExtensionsKt.firstCached(
+                mPreferenceManager2.getWorkspaceScrollEffect());
+        boolean active = effect != WorkspaceScrollEffect.NONE && !workspaceInModalState()
+                && !mIsSwitchingState && !mDragController.isDragging();
+        boolean stockFade = mWorkspaceFadeInAdjacentScreens;
+        int screenCenter = getScrollX() + getMeasuredWidth() / 2;
+        float pageDistance = getMeasuredWidth() + getPageSpacing();
+        for (int i = 0; i < getChildCount(); i++) {
+            CellLayout child = (CellLayout) getChildAt(i);
+            if (child == null) continue;
+            View page = child.getShortcutsAndWidgets();
+            if (active) {
+                WorkspaceScrollEffect.apply(effect, page, getScrollProgress(screenCenter, child, i),
+                        pageDistance, stockFade);
+            } else if (mLastScrollEffect != WorkspaceScrollEffect.NONE) {
+                // Leaving an effect or entering a modal state: undo transforms once; keep the
+                // alpha that state animations own.
+                WorkspaceScrollEffect.reset(page, /* keepAlpha= */ true);
+            }
+        }
+        mLastScrollEffect = active ? effect : WorkspaceScrollEffect.NONE;
     }
 
     public void showPageIndicatorAtCurrentScroll() {

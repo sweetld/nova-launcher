@@ -41,6 +41,7 @@ import app.lawnchair.ui.preferences.components.HomeLayoutSettings
 import app.lawnchair.ui.preferences.components.NavigationActionPreference
 import app.lawnchair.ui.preferences.components.OverlayHandlerPreference
 import app.lawnchair.ui.preferences.components.controls.ClickablePreference
+import app.lawnchair.animation.WorkspaceScrollEffect
 import app.lawnchair.ui.preferences.components.controls.ListPreference
 import app.lawnchair.ui.preferences.components.controls.SliderPreference
 import app.lawnchair.ui.preferences.components.controls.SwitchPreference
@@ -159,6 +160,11 @@ fun HomeScreenPreferences(
         }
         PreferenceGroup(heading = stringResource(R.string.style)) {
             HomeScreenTextColorPreference()
+            ListPreference(
+                adapter = prefs2.workspaceScrollEffect.getAdapter(),
+                entries = WorkspaceScrollEffect.listEntries(),
+                label = stringResource(id = R.string.scroll_effect_label),
+            )
             OverlayHandlerPreference(
                 adapter = prefs2.closingAppOverlay.getAdapter(),
                 label = stringResource(id = R.string.app_closing_animation),

@@ -44,6 +44,8 @@ import app.lawnchair.ui.preferences.components.AppDrawerHapticFeedbackPreference
 import app.lawnchair.ui.preferences.components.NavigationActionPreference
 import app.lawnchair.ui.preferences.components.colorpreference.ColorPreference
 import app.lawnchair.ui.preferences.components.controls.SliderPreference
+import app.lawnchair.allapps.DrawerSortMode
+import app.lawnchair.ui.preferences.components.controls.ListPreference
 import app.lawnchair.ui.preferences.components.controls.SwitchPreference
 import app.lawnchair.ui.preferences.components.controls.SwitchPreferenceWithPreview
 import app.lawnchair.ui.preferences.components.controls.WarningPreference
@@ -87,6 +89,11 @@ fun AppDrawerPreferences(
                 label = stringResource(id = R.string.hidden_apps_label),
                 destination = AppDrawerHiddenApps,
                 subtitle = resources.getQuantityString(R.plurals.apps_count, hiddenApps.size, hiddenApps.size),
+            )
+            ListPreference(
+                adapter = prefs2.drawerSortMode.getAdapter(),
+                entries = DrawerSortMode.listEntries(),
+                label = stringResource(id = R.string.drawer_sort_label),
             )
             SearchBarPreference(SearchRoute.DRAWER_SEARCH, showLabel = false)
             NavigationActionPreference(

@@ -45,6 +45,14 @@ fun GesturePreferences(
                 label = stringResource(id = R.string.gesture_two_finger_swipe_down),
             )
             GestureHandlerPreference(
+                adapter = prefs.pinchInGestureHandler.getAdapter(),
+                label = stringResource(id = R.string.gesture_pinch_in),
+            )
+            GestureHandlerPreference(
+                adapter = prefs.pinchOutGestureHandler.getAdapter(),
+                label = stringResource(id = R.string.gesture_pinch_out),
+            )
+            GestureHandlerPreference(
                 adapter = prefs.homePressGestureHandler.getAdapter(),
                 label = stringResource(id = R.string.gesture_home_tap),
             )
